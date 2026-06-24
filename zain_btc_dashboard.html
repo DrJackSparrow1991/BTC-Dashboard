@@ -12,6 +12,7 @@
     color: #e2e8f0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
   /* ── HEADER ── */
@@ -45,7 +46,14 @@
   @keyframes spin { to { transform: rotate(360deg); } }
 
   /* ── MAIN LAYOUT ── */
-  main { padding: 20px 24px; max-width: 1400px; margin: 0 auto; }
+  main {
+    padding: 20px 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 
   /* ── SECTION TITLES ── */
   .section-title {
@@ -62,26 +70,8 @@
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 12px;
-    margin-bottom: 20px;
   }
 
-  /* ── MOBILE RESPONSIVE ── */
-  @media (max-width: 768px) {
-    main { padding: 12px 14px; }
-    .cards-row { grid-template-columns: repeat(2, 1fr); }
-    .card { padding: 12px; }
-    .card-label { font-size: 9px; }
-    .card-value { font-size: 20px; }
-    .card-sub { font-size: 11px; }
-    .two-col { grid-template-columns: 1fr; }
-    .three-col { grid-template-columns: 1fr; }
-    .whale-summary { grid-template-columns: repeat(2, 1fr); }
-    .logo-text { font-size: 15px; }
-    .logo-sub { font-size: 10px; }
-    .clock { font-size: 11px; }
-    header { padding: 12px 16px; }
-    .signal-bar { gap: 10px; padding: 12px 14px; }
-  }
   .card {
     background: #0d1326;
     border: 1px solid #1e293b;
@@ -103,10 +93,6 @@
   .card-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #475569; margin-bottom: 8px; }
   .card-value { font-size: 26px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
   .card-sub   { font-size: 12px; color: #64748b; margin-top: 5px; }
-  .card-badge {
-    display: inline-block; padding: 2px 8px; border-radius: 4px;
-    font-size: 11px; font-weight: 600; margin-top: 6px;
-  }
 
   .green  { color: #22c55e; }
   .amber  { color: #f59e0b; }
@@ -121,32 +107,10 @@
   .bg-blue   { background: #1e3a5f; color: #93c5fd; }
   .bg-gray   { background: #1e293b; color: #94a3b8; }
 
-  /* ── SIGNAL SUMMARY BAR ── */
-  .signal-bar {
-    background: #0d1326; border: 1px solid #1e293b; border-radius: 10px;
-    padding: 14px 20px; margin-bottom: 20px;
-    display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
-  }
-  .signal-label { font-size: 11px; color: #475569; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
-  .signal-dots { display: flex; gap: 8px; flex-wrap: wrap; }
-  .signal-dot {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 12px; padding: 4px 10px; border-radius: 20px;
-    font-weight: 500;
-  }
-  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-  .dot-green { background: #22c55e; }
-  .dot-amber { background: #f59e0b; }
-  .dot-red   { background: #ef4444; }
-  .dot-gray  { background: #475569; }
-
-  /* ── TWO COLUMN ── */
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-  .three-col { display: grid; grid-template-columns: 1fr 2fr; gap: 16px; margin-bottom: 20px; }
-
   /* ── WHALE TRACKER ── */
   .panel {
     background: #0d1326; border: 1px solid #1e293b; border-radius: 10px; padding: 16px;
+    width: 100%;
   }
   .panel-title {
     font-size: 13px; font-weight: 600; color: #e2e8f0; margin-bottom: 12px;
@@ -158,7 +122,7 @@
   .whale-input {
     flex: 1; background: #1e293b; border: 1px solid #334155; color: #e2e8f0;
     padding: 8px 12px; border-radius: 6px; font-size: 12px; font-family: monospace;
-    outline: none;
+    outline: none; min-width: 0;
   }
   .whale-input:focus { border-color: #3b82f6; }
   .whale-input::placeholder { color: #475569; }
@@ -168,10 +132,6 @@
     font-weight: 600; white-space: nowrap; transition: background 0.2s;
   }
   .btn:hover { background: #2d5a8e; }
-  .btn-primary {
-    background: #1d4ed8; border-color: #2563eb; color: #fff;
-  }
-  .btn-primary:hover { background: #2563eb; }
 
   .whale-presets { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
   .preset-tag {
@@ -181,17 +141,6 @@
   }
   .preset-tag:hover { border-color: #3b82f6; color: #60a5fa; }
 
-  /* ── WHALE TABLE ── */
-  .whale-table-wrap { overflow-x: auto; }
-  .whale-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .whale-table th {
-    text-align: left; padding: 8px 10px; font-size: 10px; font-weight: 600;
-    text-transform: uppercase; letter-spacing: 0.05em; color: #475569;
-    border-bottom: 1px solid #1e293b;
-  }
-  .whale-table td { padding: 8px 10px; border-bottom: 1px solid #0f172a; }
-  .whale-table tr:hover td { background: #111827; }
-  .whale-table .addr { font-family: monospace; color: #60a5fa; font-size: 11px; }
   .whale-summary {
     display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px;
   }
@@ -202,15 +151,33 @@
   .whale-stat .ws-val { font-size: 20px; font-weight: 700; }
   .whale-stat .ws-lbl { font-size: 10px; color: #475569; text-transform: uppercase; margin-top: 2px; }
 
-  /* ── BIAS BAR ── */
   .bias-bar-wrap { margin-bottom: 10px; }
   .bias-bar-label { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
   .bias-bar-track { height: 8px; background: #1e293b; border-radius: 4px; overflow: hidden; }
   .bias-bar-fill-long  { height: 100%; background: #22c55e; border-radius: 4px 0 0 4px; transition: width 0.4s; }
 
+  .whale-table-wrap { overflow-x: auto; }
+  .whale-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .whale-table th {
+    text-align: left; padding: 8px 10px; font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.05em; color: #475569;
+    border-bottom: 1px solid #1e293b;
+  }
+  .whale-table td { padding: 8px 10px; border-bottom: 1px solid #0f172a; }
+  .whale-table tr:hover td { background: #111827; }
+  .whale-table .addr { font-family: monospace; color: #60a5fa; font-size: 11px; }
+
+  .status-msg {
+    text-align: center; padding: 20px; color: #475569; font-size: 12px;
+  }
+
   /* ── QUICK LINKS ── */
-  .links-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-  .tier-group { background: #0d1326; border: 1px solid #1e293b; border-radius: 8px; padding: 12px; }
+  .links-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  .tier-group { background: #111827; border: 1px solid #1e293b; border-radius: 8px; padding: 12px; }
   .tier-group-title {
     font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
     margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
@@ -218,7 +185,7 @@
   .tier-badge {
     width: 18px; height: 18px; border-radius: 4px;
     display: inline-flex; align-items: center; justify-content: center;
-    font-size: 9px; font-weight: 800; color: #0a0f1e;
+    font-size: 9px; font-weight: 800; color: #0a0f1e; flex-shrink: 0;
   }
   .link-item {
     display: flex; align-items: center; gap: 6px;
@@ -228,12 +195,6 @@
   }
   .link-item:hover { background: #1e293b; color: #e2e8f0; }
   .link-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-
-  /* ── STATUS MESSAGES ── */
-  .status-msg {
-    text-align: center; padding: 20px; color: #475569; font-size: 12px;
-  }
-  .error-msg { color: #f87171; }
 
   /* ── LOADING SKELETON ── */
   .skel {
@@ -249,6 +210,30 @@
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: #0a0f1e; }
   ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+
+  /* ── MOBILE ── */
+  @media (max-width: 768px) {
+    main { padding: 12px 14px; gap: 14px; }
+    header { padding: 12px 16px; }
+    .logo-text { font-size: 15px; }
+    .logo-sub { font-size: 10px; }
+    .clock { font-size: 11px; }
+
+    .cards-row { grid-template-columns: repeat(2, 1fr); }
+    .card { padding: 12px; }
+    .card-label { font-size: 9px; }
+    .card-value { font-size: 20px; }
+    .card-sub { font-size: 11px; }
+
+    .whale-summary { grid-template-columns: repeat(2, 1fr); }
+
+    .links-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 480px) {
+    .links-grid { grid-template-columns: 1fr 1fr; }
+    .cards-row { grid-template-columns: 1fr 1fr; }
+  }
 </style>
 </head>
 <body>
@@ -270,68 +255,58 @@
 <main>
 
   <!-- LIVE DATA CARDS -->
-  <div class="section-title">Live Market Data</div>
-  <div class="cards-row">
-    <div class="card btc">
-      <div class="card-label">BTC Price</div>
-      <div class="card-value white" id="btcPrice"><span class="skel" style="width:140px;height:26px;">&nbsp;</span></div>
-      <div class="card-sub" id="btcChange">—</div>
-    </div>
-    <div class="card fg">
-      <div class="card-label">Fear & Greed</div>
-      <div class="card-value" id="fgValue"><span class="skel" style="width:60px;height:26px;">&nbsp;</span></div>
-      <div class="card-sub" id="fgLabel">—</div>
-    </div>
-    <div class="card fund">
-      <div class="card-label">Funding Rate (Binance)</div>
-      <div class="card-value" id="fundingValue"><span class="skel" style="width:80px;height:26px;">&nbsp;</span></div>
-      <div class="card-sub" id="fundingNext">Next: —</div>
-    </div>
-    <div class="card oi">
-      <div class="card-label">Open Interest (Binance)</div>
-      <div class="card-value" id="oiValue"><span class="skel" style="width:80px;height:26px;">&nbsp;</span></div>
-      <div class="card-sub" id="oiChange">1h change: —</div>
-    </div>
-    <div class="card signal">
-      <div class="card-label">Quick Read</div>
-      <div class="card-value" id="quickReadVal" style="font-size:14px;line-height:1.5;">—</div>
-      <div class="card-sub" id="quickReadSub">Based on live data above</div>
+  <div>
+    <div class="section-title">Live Market Data</div>
+    <div class="cards-row">
+      <div class="card btc">
+        <div class="card-label">BTC Price</div>
+        <div class="card-value white" id="btcPrice"><span class="skel" style="width:120px;height:26px;">&nbsp;</span></div>
+        <div class="card-sub" id="btcChange">—</div>
+      </div>
+      <div class="card fg">
+        <div class="card-label">Fear & Greed</div>
+        <div class="card-value" id="fgValue"><span class="skel" style="width:60px;height:26px;">&nbsp;</span></div>
+        <div class="card-sub" id="fgLabel">—</div>
+      </div>
+      <div class="card fund">
+        <div class="card-label">Funding Rate (Binance)</div>
+        <div class="card-value" id="fundingValue"><span class="skel" style="width:80px;height:26px;">&nbsp;</span></div>
+        <div class="card-sub" id="fundingNext">Next: —</div>
+      </div>
+      <div class="card oi">
+        <div class="card-label">Open Interest (Binance)</div>
+        <div class="card-value" id="oiValue"><span class="skel" style="width:80px;height:26px;">&nbsp;</span></div>
+        <div class="card-sub" id="oiChange">1h change: —</div>
+      </div>
+      <div class="card signal">
+        <div class="card-label">Quick Read</div>
+        <div class="card-value" id="quickReadVal" style="font-size:14px;line-height:1.5;">—</div>
+        <div class="card-sub" id="quickReadSub">Based on live data above</div>
+      </div>
     </div>
   </div>
 
-  <!-- SIGNAL DOTS -->
-  <div class="signal-bar">
-    <div class="signal-label">Tier 1 Status</div>
-    <div class="signal-dots" id="signalDots">
-      <div class="signal-dot bg-gray"><span class="dot dot-gray"></span>Funding —</div>
-      <div class="signal-dot bg-gray"><span class="dot dot-gray"></span>OI —</div>
-      <div class="signal-dot bg-gray"><span class="dot dot-gray"></span>Fear/Greed —</div>
-    </div>
-    <div style="margin-left:auto;font-size:11px;color:#334155;">Check liquidation heatmap manually → coinglass.com/LiquidationMap</div>
-  </div>
-
-  <!-- WHALE + LINKS ROW -->
-  <div class="three-col">
-
-    <!-- WHALE TRACKER -->
+  <!-- WHALE TRACKER -->
+  <div>
+    <div class="section-title">Whale Tracker</div>
     <div class="panel">
-      <div class="panel-title">🐋 Whale Tracker <span>Hyperliquid</span></div>
+      <div class="panel-title">🐋 Whale Tracker <span>Hyperliquid — paste addresses to scan BTC positions</span></div>
 
       <div class="whale-summary">
         <div class="whale-stat">
-          <div class="whale-stat .ws-val green" id="wh-longs" style="font-size:20px;font-weight:700;">—</div>
+          <div class="ws-val green" id="wh-longs">—</div>
           <div class="ws-lbl">Longs</div>
         </div>
         <div class="whale-stat">
-          <div class="whale-stat .ws-val red" id="wh-shorts" style="font-size:20px;font-weight:700;">—</div>
+          <div class="ws-val red" id="wh-shorts">—</div>
           <div class="ws-lbl">Shorts</div>
         </div>
         <div class="whale-stat">
-          <div class="whale-stat .ws-val white" id="wh-scanned" style="font-size:20px;font-weight:700;">—</div>
+          <div class="ws-val white" id="wh-scanned">—</div>
           <div class="ws-lbl">Scanned</div>
         </div>
         <div class="whale-stat">
-          <div class="whale-stat .ws-val amber" id="wh-bias" style="font-size:20px;font-weight:700;">—</div>
+          <div class="ws-val amber" id="wh-bias">—</div>
           <div class="ws-lbl">Bias</div>
         </div>
       </div>
@@ -346,8 +321,6 @@
         </div>
       </div>
 
-      <div class="whale-presets" id="presetTags"></div>
-
       <div class="whale-input-row">
         <input class="whale-input" id="whaleAddr" placeholder="Paste Hyperliquid address (0x...)" />
         <button class="btn" onclick="addAddress()">Add</button>
@@ -358,24 +331,23 @@
       </div>
 
       <div style="margin-top:10px;font-size:10px;color:#334155;">
-        Get addresses from: hypurrscan.io → leaderboard → copy wallet addresses
+        Get addresses from: coinglass.com/hyperliquid → whale leaderboard → copy address → verify on hypertracker.io
       </div>
     </div>
+  </div>
 
-    <!-- QUICK LINKS -->
+  <!-- QUICK LINKS -->
+  <div>
+    <div class="section-title">Quick Links — All 8 Tiers</div>
     <div class="panel">
-      <div class="panel-title">📋 Quick Links — All 8 Tiers</div>
       <div class="links-grid" id="linksGrid"></div>
     </div>
-
   </div>
 
 </main>
 
 <script>
-// ══════════════════════════════════════════════════════
-// CLOCK
-// ══════════════════════════════════════════════════════
+// ── CLOCK ──
 function updateClock() {
   const now = new Date();
   const h = now.getUTCHours().toString().padStart(2,'0');
@@ -386,9 +358,7 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// ══════════════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════════════
+// ── HELPERS ──
 function fmt(n, dec=0) {
   return Number(n).toLocaleString('en-US', {minimumFractionDigits:dec, maximumFractionDigits:dec});
 }
@@ -398,9 +368,7 @@ function fmtB(n) {
   return fmt(n);
 }
 
-// ══════════════════════════════════════════════════════
-// LIVE DATA
-// ══════════════════════════════════════════════════════
+// ── LIVE DATA ──
 async function loadBTC() {
   try {
     const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
@@ -439,19 +407,15 @@ async function loadFunding() {
     const r = await fetch('https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT');
     const d = await r.json();
     const rate = parseFloat(d.lastFundingRate) * 100;
-    const next = new Date(d.nextFundingTime);
     const nowMs = Date.now();
     const diffMin = Math.round((d.nextFundingTime - nowMs) / 60000);
     const h = Math.floor(diffMin / 60);
     const m = diffMin % 60;
 
-    let cls = 'green';
-    let badge = 'Neutral';
-    const absRate = Math.abs(rate);
-    if (rate > 0.05) { cls = 'red'; badge = 'Overcrowded Longs'; }
-    else if (rate > 0.02) { cls = 'amber'; badge = 'Elevated'; }
-    else if (rate < -0.02) { cls = 'blue'; badge = 'Shorts Overcrowded'; }
-    else { cls = 'green'; badge = 'Neutral'; }
+    let cls = 'green', badge = 'Neutral';
+    if (rate > 0.05)       { cls = 'red';   badge = 'Overcrowded Longs'; }
+    else if (rate > 0.02)  { cls = 'amber'; badge = 'Elevated'; }
+    else if (rate < -0.02) { cls = 'blue';  badge = 'Shorts Overcrowded'; }
 
     document.getElementById('fundingValue').innerHTML = `<span class="${cls}">${rate >= 0 ? '+' : ''}${rate.toFixed(4)}%</span>`;
     document.getElementById('fundingNext').innerHTML = `<span class="muted">Next in ${h}h ${m}m · ${badge}</span>`;
@@ -482,89 +446,65 @@ async function loadOI() {
   }
 }
 
-async function updateSignals(funding, fg, oi) {
-  const dots = [];
+async function updateQuickRead(funding, fg, oi) {
+  if (!funding || !fg || !oi) return;
+  const warnings = [], positives = [];
+  if (funding.rate > 0.05)  warnings.push('Overcrowded longs');
+  else if (funding.rate < -0.02) positives.push('Shorts overcrowded');
+  if (oi.pct > 0.5)   positives.push('OI rising');
+  else if (oi.pct < -0.5) warnings.push('OI declining');
+  if (fg.val > 80) warnings.push('Extreme greed');
+  else if (fg.val < 25) warnings.push('Extreme fear');
 
-  // Funding
-  if (funding) {
-    const r = funding.rate;
-    if (r > 0.05)         dots.push({lbl: `Funding +${r.toFixed(3)}%`, cls: 'bg-red', dot: 'dot-red'});
-    else if (r > 0.02)    dots.push({lbl: `Funding +${r.toFixed(3)}%`, cls: 'bg-amber', dot: 'dot-amber'});
-    else if (r < -0.02)   dots.push({lbl: `Funding ${r.toFixed(3)}%`, cls: 'bg-blue', dot: 'dot-green'});
-    else                  dots.push({lbl: `Funding ${r.toFixed(4)}%`, cls: 'bg-green', dot: 'dot-green'});
-  }
-
-  // OI
-  if (oi) {
-    if (oi.pct > 0.5)       dots.push({lbl: `OI +${oi.pct.toFixed(2)}%`, cls: 'bg-green', dot: 'dot-green'});
-    else if (oi.pct < -0.5) dots.push({lbl: `OI ${oi.pct.toFixed(2)}%`, cls: 'bg-amber', dot: 'dot-amber'});
-    else                    dots.push({lbl: `OI ${oi.pct.toFixed(2)}%`, cls: 'bg-gray', dot: 'dot-gray'});
-  }
-
-  // Fear & Greed
-  if (fg) {
-    const v = fg.val;
-    if (v > 80)       dots.push({lbl: `F&G ${v} Extreme Greed`, cls: 'bg-red', dot: 'dot-red'});
-    else if (v > 65)  dots.push({lbl: `F&G ${v} Greed`, cls: 'bg-amber', dot: 'dot-amber'});
-    else if (v < 25)  dots.push({lbl: `F&G ${v} Extreme Fear`, cls: 'bg-red', dot: 'dot-red'});
-    else if (v < 40)  dots.push({lbl: `F&G ${v} Fear`, cls: 'bg-amber', dot: 'dot-amber'});
-    else              dots.push({lbl: `F&G ${v} Neutral`, cls: 'bg-green', dot: 'dot-green'});
-  }
-
-  const container = document.getElementById('signalDots');
-  container.innerHTML = dots.map(d =>
-    `<div class="signal-dot ${d.cls}"><span class="dot ${d.dot}"></span>${d.lbl}</div>`
-  ).join('') || '<span class="muted" style="font-size:12px;">Loading…</span>';
-
-  // Quick read
-  if (funding && fg && oi) {
-    const warnings = [];
-    const positives = [];
-    if (funding.rate > 0.05) warnings.push('Overcrowded longs');
-    else if (funding.rate < -0.02) positives.push('Shorts overcrowded');
-    if (oi.pct > 0.5) positives.push('OI rising');
-    else if (oi.pct < -0.5) warnings.push('OI declining');
-    if (fg.val > 80) warnings.push('Extreme greed');
-    else if (fg.val < 25) warnings.push('Extreme fear');
-
-    let html = '';
-    if (warnings.length === 0 && positives.length > 0) {
-      html = `<span class="green">✓ Supportive</span>`;
-    } else if (warnings.length > 0) {
-      html = `<span class="amber">⚠ ${warnings[0]}</span>`;
-    } else {
-      html = `<span class="muted">Neutral</span>`;
-    }
-    document.getElementById('quickReadVal').innerHTML = html;
-  }
+  let html = '';
+  if (warnings.length === 0 && positives.length > 0) html = `<span class="green">✓ Supportive</span>`;
+  else if (warnings.length > 0) html = `<span class="amber">⚠ ${warnings[0]}</span>`;
+  else html = `<span class="muted">Neutral</span>`;
+  document.getElementById('quickReadVal').innerHTML = html;
 }
 
 async function loadAll() {
   const btn = document.getElementById('refreshBtn');
   btn.classList.add('spinning');
-  const [f, fg, fund, oi] = await Promise.all([loadBTC(), loadFG(), loadFunding(), loadOI()]);
-  await updateSignals(fund, fg, oi);
+  const [btc, fg, fund, oi] = await Promise.all([loadBTC(), loadFG(), loadFunding(), loadOI()]);
+  await updateQuickRead(fund, fg, oi);
   btn.classList.remove('spinning');
 }
 
-// ══════════════════════════════════════════════════════
-// WHALE TRACKER
-// ══════════════════════════════════════════════════════
+// ── WHALE TRACKER ──
 let addresses = [];
-const PRESETS = [
-  {label: 'HL Rank 3', addr: '0x17c3c8fdbcb7d1b240ce08965e09b1fc91cba868'},
+
+const DEFAULT_ADDRESSES = [
+  { label: 'HL Rank 3', addr: '0x17c3c8fdbcb7d1b240ce08965e09b1fc91cba868' },
 ];
 
-function buildPresets() {
-  const el = document.getElementById('presetTags');
-  el.innerHTML = PRESETS.map((p,i) =>
-    `<span class="preset-tag" onclick="usePreset(${i})">${p.label}</span>`
-  ).join('');
+function saveAddresses() {
+  localStorage.setItem('whaleAddresses', JSON.stringify(addresses));
 }
 
-function usePreset(i) {
-  document.getElementById('whaleAddr').value = PRESETS[i].addr;
-  addAddress();
+function loadSavedAddresses() {
+  const saved = localStorage.getItem('whaleAddresses');
+  if (saved) {
+    addresses = JSON.parse(saved);
+  } else {
+    addresses = DEFAULT_ADDRESSES.map(d => d.addr);
+    saveAddresses();
+  }
+}
+
+function removeAddress(addr) {
+  addresses = addresses.filter(a => a !== addr);
+  saveAddresses();
+  if (addresses.length === 0) {
+    document.getElementById('wh-longs').innerHTML = '—';
+    document.getElementById('wh-shorts').innerHTML = '—';
+    document.getElementById('wh-scanned').innerHTML = '—';
+    document.getElementById('wh-bias').innerHTML = '—';
+    document.getElementById('biasBarWrap').style.display = 'none';
+    document.getElementById('whaleTableWrap').innerHTML = '<div class="status-msg">No addresses tracked. Add one below.</div>';
+  } else {
+    scanWhales();
+  }
 }
 
 function addAddress() {
@@ -576,6 +516,7 @@ function addAddress() {
     return;
   }
   addresses.push(addr);
+  saveAddresses();
   input.value = '';
   scanWhales();
 }
@@ -594,21 +535,17 @@ async function fetchWhaleData(addr) {
     ]);
     const state = await stateRes.json();
     const port  = await portRes.json();
-
     const acctVal = parseFloat(state.marginSummary?.accountValue || 0);
     const btcPos = (state.assetPositions || []).find(p => p.position?.coin === 'BTC');
-
-    // ROI from portfolio
     let roi = null;
     if (port && port[4]) {
       const allTime = port[4];
-      if (allTime.pnlHistory && allTime.pnlHistory.length > 0 && allTime.accountValueHistory && allTime.accountValueHistory.length > 0) {
+      if (allTime.pnlHistory?.length > 0 && allTime.accountValueHistory?.length > 0) {
         const startVal = parseFloat(allTime.accountValueHistory[0][1]);
         const finalPnl = parseFloat(allTime.pnlHistory[allTime.pnlHistory.length-1][1]);
         if (startVal > 0) roi = (finalPnl / startVal) * 100;
       }
     }
-
     return { addr, acctVal, btcPos: btcPos?.position || null, roi };
   } catch(e) {
     return { addr, error: true };
@@ -620,30 +557,23 @@ async function scanWhales() {
   document.getElementById('whaleTableWrap').innerHTML = '<div class="status-msg">Scanning wallets…</div>';
 
   const results = await Promise.all(addresses.map(fetchWhaleData));
+  let longs = 0, shorts = 0;
 
-  let longs = 0, shorts = 0, btcCount = 0;
   const rows = results.map(r => {
     if (r.error) return `<tr><td class="addr">${r.addr.slice(0,10)}…</td><td colspan="7" class="red">Failed to load</td></tr>`;
-
     const pos = r.btcPos;
     if (!pos) return `<tr><td class="addr">${r.addr.slice(0,10)}…</td><td colspan="7" class="muted">No BTC position</td></tr>`;
-
-    btcCount++;
     const szi = parseFloat(pos.szi);
     const side = szi > 0 ? 'LONG' : 'SHORT';
     if (szi > 0) longs++; else shorts++;
-
     const entryPx = parseFloat(pos.entryPx || 0);
     const posVal = Math.abs(szi) * entryPx;
     const upnl = parseFloat(pos.unrealizedPnl || 0);
-    const roe = pos.leverage?.value ? (upnl / (posVal / parseFloat(pos.leverage.value)) * 100) : null;
     const liqPx = parseFloat(pos.liquidationPx || 0);
     const lev = pos.leverage?.value || '—';
-
     const sideClass = szi > 0 ? 'green' : 'red';
     const roiStr = r.roi != null ? `${r.roi >= 0 ? '+' : ''}${r.roi.toFixed(1)}%` : '—';
     const upnlClass = upnl >= 0 ? 'green' : 'red';
-
     return `<tr>
       <td class="addr" title="${r.addr}">${r.addr.slice(0,8)}…${r.addr.slice(-4)}</td>
       <td class="white">$${fmtB(r.acctVal)}</td>
@@ -655,10 +585,10 @@ async function scanWhales() {
       <td class="${upnlClass}">${upnl >= 0 ? '+' : ''}$${fmt(upnl, 1)}</td>
       <td class="amber">${lev}x</td>
       <td class="red">${liqPx > 0 ? '$'+fmt(liqPx) : '—'}</td>
+      <td><button onclick="removeAddress('${r.addr}')" style="background:none;border:none;color:#475569;cursor:pointer;font-size:14px;padding:2px 6px;" title="Remove">✕</button></td>
     </tr>`;
   });
 
-  // Update summary
   document.getElementById('wh-longs').innerHTML = `<span class="green">${longs}</span>`;
   document.getElementById('wh-shorts').innerHTML = `<span class="red">${shorts}</span>`;
   document.getElementById('wh-scanned').innerHTML = `<span class="white">${results.length}</span>`;
@@ -668,7 +598,6 @@ async function scanWhales() {
     const bias = longs > shorts ? 'LONG' : longs < shorts ? 'SHORT' : 'NEUTRAL';
     const biasClass = longs > shorts ? 'green' : longs < shorts ? 'red' : 'amber';
     document.getElementById('wh-bias').innerHTML = `<span class="${biasClass}">${bias}</span>`;
-
     const longPct = Math.round(longs / total * 100);
     document.getElementById('biasLongPct').textContent = `${longPct}% Long`;
     document.getElementById('biasShortPct').textContent = `${100-longPct}% Short`;
@@ -679,89 +608,61 @@ async function scanWhales() {
   document.getElementById('whaleTableWrap').innerHTML = `
     <div class="whale-table-wrap">
       <table class="whale-table">
-        <thead>
-          <tr>
-            <th>Wallet</th><th>Acct Value</th><th>ROI</th><th>Side</th>
-            <th>Size</th><th>Pos Value</th><th>Entry</th><th>uPnL</th>
-            <th>Lev</th><th>Liq Price</th>
-          </tr>
-        </thead>
+        <thead><tr>
+          <th>Wallet</th><th>Acct Value</th><th>ROI</th><th>Side</th>
+          <th>Size</th><th>Pos Value</th><th>Entry</th><th>uPnL</th>
+          <th>Lev</th><th>Liq Price</th>
+        </tr></thead>
         <tbody>${rows.join('')}</tbody>
       </table>
     </div>`;
 }
 
-// ══════════════════════════════════════════════════════
-// QUICK LINKS
-// ══════════════════════════════════════════════════════
+// ── QUICK LINKS ──
 const TIERS = [
-  {
-    num: 1, title: 'Before Every Trade', color: '#3b82f6',
-    links: [
-      {label: 'Funding Rates', url: 'https://coinglass.com/FundingRate'},
-      {label: 'Open Interest', url: 'https://coinglass.com/open-interest/BTC'},
-      {label: 'Liquidation Map', url: 'https://coinglass.com/LiquidationMap'},
-    ]
-  },
-  {
-    num: 2, title: 'Daily Context', color: '#8b5cf6',
-    links: [
-      {label: 'Fear & Greed', url: 'https://alternative.me/crypto/fear-and-greed-index/'},
-      {label: 'Exchange Netflow', url: 'https://cryptoquant.com/asset/btc/chart/exchange-flows/netflow?exchange=all_exchange&window=DAY&sma=0&ema=0&priceScale=log&metricScale=linear&chartStyle=column'},
-      {label: 'DXY (TradingView)', url: 'https://tradingview.com/chart/?symbol=TVC:DXY'},
-    ]
-  },
-  {
-    num: 3, title: 'Weekly Awareness', color: '#06b6d4',
-    links: [
-      {label: 'Economic Calendar', url: 'https://investing.com/economic-calendar/'},
-      {label: 'Whale Alert', url: 'https://whale-alert.io/'},
-      {label: 'Willy Woo', url: 'https://twitter.com/woonomic'},
-      {label: 'Rekt Capital', url: 'https://twitter.com/RektCapital'},
-    ]
-  },
-  {
-    num: 4, title: 'Derivatives Deep', color: '#f59e0b',
-    links: [
-      {label: 'Put/Call Ratio', url: 'https://coinglass.com/BitcoinOptionsData'},
-      {label: 'Max Pain', url: 'https://coinglass.com/BitcoinOptionsData'},
-      {label: 'Deribit Stats', url: 'https://deribit.com/statistics/BTC/metrics/24h'},
-      {label: 'Coinbase Premium', url: 'https://coinglass.com/CoinbasePremium'},
-    ]
-  },
-  {
-    num: 5, title: 'On-Chain', color: '#22c55e',
-    links: [
-      {label: 'MVRV Z-Score', url: 'https://lookintobitcoin.com/charts/mvrv-zscore/'},
-      {label: 'SOPR', url: 'https://cryptoquant.com/asset/btc/chart/network-indicator/sopr?window=DAY'},
-      {label: 'Exchange Reserve', url: 'https://cryptoquant.com/asset/btc/chart/exchange-flows/exchange-reserve?exchange=all_exchange'},
-      {label: 'USDT.D', url: 'https://tradingview.com/chart/?symbol=CRYPTOCAP:USDT.D'},
-    ]
-  },
-  {
-    num: 6, title: 'Macro', color: '#ef4444',
-    links: [
-      {label: 'US10Y Yield', url: 'https://tradingview.com/chart/?symbol=TVC:US10Y'},
-      {label: 'S&P 500', url: 'https://tradingview.com/chart/?symbol=SP:SPX'},
-      {label: 'Gold', url: 'https://tradingview.com/chart/?symbol=TVC:GOLD'},
-    ]
-  },
-  {
-    num: 7, title: 'ETF Flows', color: '#f97316',
-    links: [
-      {label: 'ETF Daily Flows', url: 'https://farside.co.uk/bitcoin-etf-flow/'},
-      {label: 'Coinbase Premium', url: 'https://coinglass.com/CoinbasePremium'},
-    ]
-  },
-  {
-    num: 8, title: 'Cycle Position', color: '#a78bfa',
-    links: [
-      {label: 'MVRV + Pi Cycle', url: 'https://lookintobitcoin.com/charts/mvrv-zscore/'},
-      {label: 'Pi Cycle Top', url: 'https://lookintobitcoin.com/charts/pi-cycle-top-indicator/'},
-      {label: 'Realised Price', url: 'https://lookintobitcoin.com/charts/bitcoin-realized-price/'},
-      {label: 'Halving Cycle', url: 'https://lookintobitcoin.com/charts/stock-to-flow-model/'},
-    ]
-  }
+  { num:1, title:'Before Every Trade', color:'#3b82f6', links:[
+    {label:'Funding Rates', url:'https://coinglass.com/FundingRate'},
+    {label:'Open Interest', url:'https://coinglass.com/open-interest/BTC'},
+    {label:'Liquidation Map', url:'https://coinglass.com/LiquidationMap'},
+  ]},
+  { num:2, title:'Daily Context', color:'#8b5cf6', links:[
+    {label:'Fear & Greed', url:'https://alternative.me/crypto/fear-and-greed-index/'},
+    {label:'Exchange Netflow', url:'https://cryptoquant.com/asset/btc/chart/exchange-flows/netflow?exchange=all_exchange&window=DAY&sma=0&ema=0&priceScale=log&metricScale=linear&chartStyle=column'},
+    {label:'DXY (TradingView)', url:'https://tradingview.com/chart/?symbol=TVC:DXY'},
+  ]},
+  { num:3, title:'Weekly Awareness', color:'#06b6d4', links:[
+    {label:'Economic Calendar', url:'https://investing.com/economic-calendar/'},
+    {label:'Whale Alert', url:'https://whale-alert.io/'},
+    {label:'Willy Woo', url:'https://twitter.com/woonomic'},
+    {label:'Rekt Capital', url:'https://twitter.com/RektCapital'},
+  ]},
+  { num:4, title:'Derivatives Deep', color:'#f59e0b', links:[
+    {label:'Put/Call Ratio', url:'https://coinglass.com/BitcoinOptionsData'},
+    {label:'Max Pain', url:'https://coinglass.com/BitcoinOptionsData'},
+    {label:'Deribit Stats', url:'https://deribit.com/statistics/BTC/metrics/24h'},
+    {label:'Coinbase Premium', url:'https://coinglass.com/CoinbasePremium'},
+  ]},
+  { num:5, title:'On-Chain', color:'#22c55e', links:[
+    {label:'MVRV Z-Score', url:'https://lookintobitcoin.com/charts/mvrv-zscore/'},
+    {label:'SOPR', url:'https://cryptoquant.com/asset/btc/chart/network-indicator/sopr?window=DAY'},
+    {label:'Exchange Reserve', url:'https://cryptoquant.com/asset/btc/chart/exchange-flows/exchange-reserve?exchange=all_exchange'},
+    {label:'USDT.D', url:'https://tradingview.com/chart/?symbol=CRYPTOCAP:USDT.D'},
+  ]},
+  { num:6, title:'Macro', color:'#ef4444', links:[
+    {label:'US10Y Yield', url:'https://tradingview.com/chart/?symbol=TVC:US10Y'},
+    {label:'S&P 500', url:'https://tradingview.com/chart/?symbol=SP:SPX'},
+    {label:'Gold', url:'https://tradingview.com/chart/?symbol=TVC:GOLD'},
+  ]},
+  { num:7, title:'ETF Flows', color:'#f97316', links:[
+    {label:'ETF Daily Flows', url:'https://farside.co.uk/bitcoin-etf-flow/'},
+    {label:'Coinbase Premium', url:'https://coinglass.com/CoinbasePremium'},
+  ]},
+  { num:8, title:'Cycle Position', color:'#a78bfa', links:[
+    {label:'MVRV + Pi Cycle', url:'https://lookintobitcoin.com/charts/mvrv-zscore/'},
+    {label:'Pi Cycle Top', url:'https://lookintobitcoin.com/charts/pi-cycle-top-indicator/'},
+    {label:'Realised Price', url:'https://lookintobitcoin.com/charts/bitcoin-realized-price/'},
+    {label:'Halving Cycle', url:'https://lookintobitcoin.com/charts/stock-to-flow-model/'},
+  ]},
 ];
 
 function buildLinks() {
@@ -782,14 +683,11 @@ function buildLinks() {
   `).join('');
 }
 
-// ══════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════
-buildPresets();
+// ── INIT ──
 buildLinks();
+loadSavedAddresses();
 loadAll();
-
-// Auto-refresh every 5 minutes
+if (addresses.length > 0) scanWhales();
 setInterval(loadAll, 300000);
 </script>
 </body>
