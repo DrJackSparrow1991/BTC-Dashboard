@@ -230,9 +230,21 @@
     .links-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
+  .ls-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  @media (max-width: 768px) {
+    .ls-grid { grid-template-columns: 1fr; }
+  }
+
   @media (max-width: 480px) {
     .links-grid { grid-template-columns: 1fr 1fr; }
     .cards-row { grid-template-columns: 1fr 1fr; }
+    .ls-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -292,7 +304,7 @@
     <div class="panel">
 
       <!-- Two rows: Top Traders + Global -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+      <div class="ls-grid">
 
         <!-- TOP TRADERS (Whales) -->
         <div style="background:#111827;border-radius:8px;padding:12px;">
