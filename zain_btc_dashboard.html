@@ -64,6 +64,24 @@
     gap: 12px;
     margin-bottom: 20px;
   }
+
+  /* ── MOBILE RESPONSIVE ── */
+  @media (max-width: 768px) {
+    main { padding: 12px 14px; }
+    .cards-row { grid-template-columns: repeat(2, 1fr); }
+    .card { padding: 12px; }
+    .card-label { font-size: 9px; }
+    .card-value { font-size: 20px; }
+    .card-sub { font-size: 11px; }
+    .two-col { grid-template-columns: 1fr; }
+    .three-col { grid-template-columns: 1fr; }
+    .whale-summary { grid-template-columns: repeat(2, 1fr); }
+    .logo-text { font-size: 15px; }
+    .logo-sub { font-size: 10px; }
+    .clock { font-size: 11px; }
+    header { padding: 12px 16px; }
+    .signal-bar { gap: 10px; padding: 12px 14px; }
+  }
   .card {
     background: #0d1326;
     border: 1px solid #1e293b;
@@ -534,8 +552,7 @@ async function loadAll() {
 // ══════════════════════════════════════════════════════
 let addresses = [];
 const PRESETS = [
-  {label: '0x91a8..de3f', addr: '0x91a8a9abf6d13d05d016f74314eadde3fce32c68'},
-  {label: '0x4768..1a2b', addr: '0x4768c3d4b1a93b8a4c2d5e6f7890abcd1234ef56'},
+  {label: 'HL Rank 3', addr: '0x17c3c8fdbcb7d1b240ce08965e09b1fc91cba868'},
 ];
 
 function buildPresets() {
