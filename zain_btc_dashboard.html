@@ -286,6 +286,80 @@
     </div>
   </div>
 
+  <!-- WHALE LONG/SHORT RATIO -->
+  <div>
+    <div class="section-title">Long / Short Sentiment — Retail vs Smart Money (Binance)</div>
+    <div class="panel">
+
+      <!-- Two rows: Top Traders + Global -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+
+        <!-- TOP TRADERS (Whales) -->
+        <div style="background:#111827;border-radius:8px;padding:12px;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#60a5fa;margin-bottom:10px;">🐋 Top Traders (Smart Money)</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
+            <div class="whale-stat">
+              <div class="ws-val" id="tt-long">—</div>
+              <div class="ws-lbl">Long</div>
+            </div>
+            <div class="whale-stat">
+              <div class="ws-val" id="tt-short">—</div>
+              <div class="ws-lbl">Short</div>
+            </div>
+            <div class="whale-stat">
+              <div class="ws-val" id="tt-bias">—</div>
+              <div class="ws-lbl">Bias</div>
+            </div>
+          </div>
+          <div class="bias-bar-label" style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+            <span class="green" id="tt-longLbl">—% Long</span>
+            <span class="red" id="tt-shortLbl">—% Short</span>
+          </div>
+          <div class="bias-bar-track">
+            <div class="bias-bar-fill-long" id="tt-bar" style="width:50%;"></div>
+          </div>
+        </div>
+
+        <!-- GLOBAL (Retail) -->
+        <div style="background:#111827;border-radius:8px;padding:12px;">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#94a3b8;margin-bottom:10px;">🐟 Global Retail (All Traders)</div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;">
+            <div class="whale-stat">
+              <div class="ws-val" id="gl-long">—</div>
+              <div class="ws-lbl">Long</div>
+            </div>
+            <div class="whale-stat">
+              <div class="ws-val" id="gl-short">—</div>
+              <div class="ws-lbl">Short</div>
+            </div>
+            <div class="whale-stat">
+              <div class="ws-val" id="gl-bias">—</div>
+              <div class="ws-lbl">Bias</div>
+            </div>
+          </div>
+          <div class="bias-bar-label" style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+            <span class="green" id="gl-longLbl">—% Long</span>
+            <span class="red" id="gl-shortLbl">—% Short</span>
+          </div>
+          <div class="bias-bar-track">
+            <div class="bias-bar-fill-long" id="gl-bar" style="width:50%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DIVERGENCE SIGNAL -->
+      <div style="background:#0a0f1e;border:1px solid #1e293b;border-radius:8px;padding:12px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#475569;">Divergence Signal</div>
+        <div id="divergence-signal" style="font-size:13px;font-weight:600;">—</div>
+        <div id="divergence-explain" style="font-size:11px;color:#64748b;margin-left:auto;">—</div>
+      </div>
+
+      <div style="margin-top:10px;font-size:10px;color:#334155;">
+        Source: Binance Futures API · Top Traders = largest accounts · Updates every refresh
+      </div>
+    </div>
+  </div>
+
   <!-- WHALE TRACKER -->
   <div>
     <div class="section-title">Whale Tracker</div>
@@ -446,6 +520,69 @@ async function loadOI() {
   }
 }
 
+async function loadWhaleLS() {
+  try {
+    const [ttRes, glRes] = await Promise.all([
+      fetch('https://fapi.binance.com/futures/data/topLongShortAccountRatio?symbol=BTCUSDT&period=5m&limit=1'),
+      fetch('https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=BTCUSDT&period=5m&limit=1')
+    ]);
+    const ttData = await ttRes.json();
+    const glData = await glRes.json();
+
+    function renderLS(longPct, shortPct, ids) {
+      const biasTxt = longPct > 55 ? 'LONG' : longPct < 45 ? 'SHORT' : 'NEUTRAL';
+      const biasCls = longPct > 55 ? 'green' : longPct < 45 ? 'red' : 'amber';
+      const longCls = longPct >= 50 ? 'green' : 'red';
+      document.getElementById(ids.long).innerHTML = `<span class="${longCls}">${longPct.toFixed(1)}%</span>`;
+      document.getElementById(ids.short).innerHTML = `<span class="red">${shortPct.toFixed(1)}%</span>`;
+      document.getElementById(ids.bias).innerHTML = `<span class="${biasCls}">${biasTxt}</span>`;
+      document.getElementById(ids.longLbl).textContent = `${longPct.toFixed(1)}% Long`;
+      document.getElementById(ids.shortLbl).textContent = `${shortPct.toFixed(1)}% Short`;
+      document.getElementById(ids.bar).style.width = longPct.toFixed(1) + '%';
+    }
+
+    let ttLong = 50, glLong = 50;
+
+    if (ttData && ttData[0]) {
+      ttLong = parseFloat(ttData[0].longAccount) * 100;
+      const ttShort = 100 - ttLong;
+      renderLS(ttLong, ttShort, {long:'tt-long', short:'tt-short', bias:'tt-bias', longLbl:'tt-longLbl', shortLbl:'tt-shortLbl', bar:'tt-bar'});
+    }
+
+    if (glData && glData[0]) {
+      glLong = parseFloat(glData[0].longAccount) * 100;
+      const glShort = 100 - glLong;
+      renderLS(glLong, glShort, {long:'gl-long', short:'gl-short', bias:'gl-bias', longLbl:'gl-longLbl', shortLbl:'gl-shortLbl', bar:'gl-bar'});
+    }
+
+    // Divergence signal
+    const diff = ttLong - glLong;
+    let sigText = '', sigExplain = '';
+    if (diff > 8) {
+      sigText = '<span class="green">⬆ Smart Money MORE Bullish than Retail</span>';
+      sigExplain = 'Top traders leaning long while retail is cautious — bullish signal';
+    } else if (diff < -8) {
+      sigText = '<span class="red">⬇ Smart Money MORE Bearish than Retail</span>';
+      sigExplain = 'Top traders leaning short while retail is long — bearish signal';
+    } else if (ttLong > 60 && glLong > 60) {
+      sigText = '<span class="amber">⚠ Both Sides Crowded Long</span>';
+      sigExplain = 'Everyone is long — potential for a squeeze down';
+    } else if (ttLong < 40 && glLong < 40) {
+      sigText = '<span class="amber">⚠ Both Sides Crowded Short</span>';
+      sigExplain = 'Everyone is short — potential for a squeeze up';
+    } else {
+      sigText = '<span class="muted">— No Strong Signal</span>';
+      sigExplain = 'Smart money and retail are aligned — wait for divergence';
+    }
+    document.getElementById('divergence-signal').innerHTML = sigText;
+    document.getElementById('divergence-explain').textContent = sigExplain;
+
+  } catch(e) {
+    document.getElementById('tt-bias').innerHTML = '<span class="red">Error</span>';
+    document.getElementById('gl-bias').innerHTML = '<span class="red">Error</span>';
+  }
+}
+
 async function updateQuickRead(funding, fg, oi) {
   if (!funding || !fg || !oi) return;
   const warnings = [], positives = [];
@@ -466,7 +603,7 @@ async function updateQuickRead(funding, fg, oi) {
 async function loadAll() {
   const btn = document.getElementById('refreshBtn');
   btn.classList.add('spinning');
-  const [btc, fg, fund, oi] = await Promise.all([loadBTC(), loadFG(), loadFunding(), loadOI()]);
+  const [btc, fg, fund, oi] = await Promise.all([loadBTC(), loadFG(), loadFunding(), loadOI(), loadWhaleLS()]);
   await updateQuickRead(fund, fg, oi);
   btn.classList.remove('spinning');
 }
