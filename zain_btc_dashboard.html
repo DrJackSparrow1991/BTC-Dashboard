@@ -246,6 +246,61 @@
     .cards-row { grid-template-columns: 1fr 1fr; }
     .ls-grid { grid-template-columns: 1fr; }
   }
+
+  /* ── TIER SNAPSHOT ── */
+  .snap-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 900px) {
+    .snap-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 480px) {
+    .snap-grid { grid-template-columns: 1fr; }
+  }
+  .snap-card {
+    background: #0d1326;
+    border: 1px solid #1e293b;
+    border-top: 2px solid var(--accent, #3b82f6);
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .snap-tier {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .snap-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .snap-stat { flex: 1; }
+  .snap-val {
+    font-size: 18px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+  .snap-val.green { color: #22c55e; }
+  .snap-val.red { color: #ef4444; }
+  .snap-val.white { color: #e2e8f0; }
+  .snap-lbl {
+    font-size: 10px;
+    color: #64748b;
+    margin-top: 2px;
+  }
+  .snap-signal {
+    font-size: 11px;
+    color: #94a3b8;
+    border-top: 1px solid #1e293b;
+    padding-top: 8px;
+    margin-top: 4px;
+    min-height: 20px;
+  }
 </style>
 </head>
 <body>
@@ -295,6 +350,89 @@
         <div class="card-value" id="quickReadVal" style="font-size:14px;line-height:1.5;">—</div>
         <div class="card-sub" id="quickReadSub">Based on live data above</div>
       </div>
+    </div>
+  </div>
+
+  <!-- TIER SNAPSHOT -->
+  <div>
+    <div class="section-title">Tier Snapshot — Key Signal Per Tier</div>
+    <div class="snap-grid">
+
+      <!-- T1: Liquidations -->
+      <div class="snap-card" style="--accent:#3b82f6;">
+        <div class="snap-tier" style="color:#3b82f6;">T1 · Liquidations 24h</div>
+        <div class="snap-row">
+          <div class="snap-stat">
+            <div class="snap-val green" id="liq-long">—</div>
+            <div class="snap-lbl">Longs Liq'd</div>
+          </div>
+          <div class="snap-stat">
+            <div class="snap-val red" id="liq-short">—</div>
+            <div class="snap-lbl">Shorts Liq'd</div>
+          </div>
+        </div>
+        <div class="snap-signal" id="liq-signal">—</div>
+      </div>
+
+      <!-- T2: USDT Dominance -->
+      <div class="snap-card" style="--accent:#8b5cf6;">
+        <div class="snap-tier" style="color:#8b5cf6;">T2 · USDT Dominance</div>
+        <div class="snap-row">
+          <div class="snap-stat">
+            <div class="snap-val white" id="usdtd-val">—</div>
+            <div class="snap-lbl">USDT.D %</div>
+          </div>
+          <div class="snap-stat">
+            <div class="snap-val" id="usdtd-chg">—</div>
+            <div class="snap-lbl">24h Change</div>
+          </div>
+        </div>
+        <div class="snap-signal" id="usdtd-signal">—</div>
+      </div>
+
+      <!-- T4: Put/Call Ratio -->
+      <div class="snap-card" style="--accent:#f59e0b;">
+        <div class="snap-tier" style="color:#f59e0b;">T4 · BTC Put/Call Ratio</div>
+        <div class="snap-row">
+          <div class="snap-stat">
+            <div class="snap-val white" id="pc-ratio">—</div>
+            <div class="snap-lbl">P/C Ratio</div>
+          </div>
+          <div class="snap-stat">
+            <div class="snap-val" id="pc-bias">—</div>
+            <div class="snap-lbl">Sentiment</div>
+          </div>
+        </div>
+        <div class="snap-signal" id="pc-signal">—</div>
+      </div>
+
+      <!-- T6: Gold + S&P -->
+      <div class="snap-card" style="--accent:#ef4444;">
+        <div class="snap-tier" style="color:#ef4444;">T6 · Macro</div>
+        <div class="snap-row">
+          <div class="snap-stat">
+            <div class="snap-val white" id="gold-val">—</div>
+            <div class="snap-lbl">Gold (oz)</div>
+          </div>
+          <div class="snap-stat">
+            <div class="snap-val white" id="sp-val">—</div>
+            <div class="snap-lbl">S&P 500</div>
+          </div>
+        </div>
+        <div class="snap-signal" id="macro-signal">—</div>
+      </div>
+
+      <!-- T7: ETF Flows (manual) -->
+      <div class="snap-card" style="--accent:#f97316;">
+        <div class="snap-tier" style="color:#f97316;">T7 · BTC ETF Flow (Manual)</div>
+        <div style="display:flex;gap:6px;margin:8px 0;">
+          <input id="etf-input" type="text" placeholder="e.g. +500M or -200M"
+            style="flex:1;background:#1e293b;border:1px solid #334155;color:#e2e8f0;padding:6px 10px;border-radius:6px;font-size:12px;outline:none;min-width:0;" />
+          <button onclick="saveETF()" style="background:#1e3a5f;border:1px solid #2d5a8e;color:#93c5fd;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;white-space:nowrap;">Save</button>
+        </div>
+        <div class="snap-signal" id="etf-display">Check farside.co.uk → enter today's total</div>
+      </div>
+
     </div>
   </div>
 
@@ -532,6 +670,150 @@ async function loadOI() {
   }
 }
 
+// ── TIER SNAPSHOT ──
+
+// T1 – 24h Liquidations (Binance forceOrders)
+async function loadLiquidations() {
+  try {
+    const cutoff = Date.now() - 86400000;
+    const res = await fetch('https://fapi.binance.com/fapi/v1/forceOrders?symbol=BTCUSDT&autoCloseType=LIQUIDATION&limit=1000');
+    if (!res.ok) throw new Error('http');
+    const data = await res.json();
+    let longLiq = 0, shortLiq = 0;
+    data.forEach(o => {
+      if (o.time < cutoff) return;
+      const val = parseFloat(o.origQty) * parseFloat(o.averagePrice);
+      if (o.side === 'SELL') longLiq += val;   // long was liquidated → SELL order
+      else shortLiq += val;                     // short was liquidated → BUY order
+    });
+    const fmt = v => v >= 1e9 ? (v/1e9).toFixed(2)+'B' : v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1e3 ? (v/1e3).toFixed(0)+'K' : '—';
+    document.getElementById('liq-long').textContent = '$'+fmt(longLiq);
+    document.getElementById('liq-short').textContent = '$'+fmt(shortLiq);
+    const bias = longLiq > shortLiq * 1.5 ? '⚡ Heavy long liquidations — bearish flush' :
+                 shortLiq > longLiq * 1.5 ? '⚡ Heavy short liquidations — squeeze rally' :
+                 '— Balanced liquidations';
+    document.getElementById('liq-signal').textContent = bias;
+  } catch(e) {
+    ['liq-long','liq-short'].forEach(id => document.getElementById(id).textContent = 'err');
+    document.getElementById('liq-signal').textContent = 'API limit reached — try later';
+  }
+}
+
+// T2 – USDT Dominance (CoinGecko global)
+async function loadUSDTD() {
+  try {
+    const res = await fetch('https://api.coingecko.com/api/v3/global');
+    const d = await res.json();
+    const dom = d.data.market_cap_percentage.usdt;
+    const chg = d.data.market_cap_change_percentage_24h_usd; // BTC market cap chg as proxy
+    document.getElementById('usdtd-val').textContent = dom.toFixed(2) + '%';
+    const chgEl = document.getElementById('usdtd-chg');
+    chgEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
+    chgEl.className = 'snap-val ' + (chg >= 0 ? 'green' : 'red');
+    document.getElementById('usdtd-signal').textContent =
+      dom > 7 ? '⚠️ High USDT.D — risk-off, crypto bearish' :
+      dom < 4 ? '✅ Low USDT.D — risk-on, bullish flow' :
+      '— Neutral USDT dominance';
+  } catch(e) {
+    document.getElementById('usdtd-val').textContent = 'err';
+    document.getElementById('usdtd-signal').textContent = 'CoinGecko error';
+  }
+}
+
+// T4 – BTC Put/Call Ratio (Deribit public options)
+async function loadPutCall() {
+  try {
+    const res = await fetch('https://www.deribit.com/api/v2/public/get_book_summary_by_currency?currency=BTC&kind=option');
+    const d = await res.json();
+    let puts = 0, calls = 0;
+    (d.result || []).forEach(o => {
+      if (!o.instrument_name) return;
+      const oi = o.open_interest || 0;
+      if (o.instrument_name.endsWith('-P')) puts += oi;
+      else if (o.instrument_name.endsWith('-C')) calls += oi;
+    });
+    const ratio = calls > 0 ? puts / calls : 0;
+    document.getElementById('pc-ratio').textContent = ratio.toFixed(2);
+    const biasEl = document.getElementById('pc-bias');
+    const sig = ratio > 0.7 ? { label: 'Bearish', cls: 'red' } :
+                ratio < 0.5 ? { label: 'Bullish', cls: 'green' } :
+                              { label: 'Neutral', cls: 'white' };
+    biasEl.textContent = sig.label;
+    biasEl.className = 'snap-val ' + sig.cls;
+    document.getElementById('pc-signal').textContent =
+      ratio > 0.7 ? '⚠️ High put buying — market hedging downside' :
+      ratio < 0.5 ? '✅ More calls — bullish options sentiment' :
+      '— Balanced options flow';
+  } catch(e) {
+    document.getElementById('pc-ratio').textContent = 'err';
+    document.getElementById('pc-signal').textContent = 'Deribit error';
+  }
+}
+
+// T6 – Macro: Gold (CoinGecko pax-gold) + S&P placeholder
+async function loadMacro() {
+  try {
+    const goldRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true');
+    const gd = await goldRes.json();
+    const goldPrice = gd['pax-gold']?.usd;
+    const goldChg = gd['pax-gold']?.usd_24h_change;
+    const goldEl = document.getElementById('gold-val');
+    goldEl.textContent = goldPrice ? '$' + goldPrice.toLocaleString('en-US', {maximumFractionDigits:0}) : '—';
+
+    // S&P 500 via Yahoo Finance CORS proxy
+    let spText = 'N/A';
+    try {
+      const spRes = await fetch('https://query2.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d&range=2d', {signal: AbortSignal.timeout(5000)});
+      if (spRes.ok) {
+        const sd = await spRes.json();
+        const closes = sd?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+        if (closes && closes.length >= 1) {
+          const last = closes[closes.length - 1];
+          spText = last ? last.toLocaleString('en-US', {maximumFractionDigits:0}) : 'N/A';
+        }
+      }
+    } catch(_) { spText = 'N/A'; }
+    document.getElementById('sp-val').textContent = spText;
+
+    const signal = goldChg != null ?
+      (goldChg > 1 ? '⚠️ Gold surging — risk-off macro environment' :
+       goldChg < -1 ? '✅ Gold falling — risk-on sentiment' :
+       '— Gold stable, no macro stress signal') : '—';
+    document.getElementById('macro-signal').textContent = signal;
+  } catch(e) {
+    document.getElementById('gold-val').textContent = 'err';
+    document.getElementById('macro-signal').textContent = 'CoinGecko error';
+  }
+}
+
+// T7 – ETF Flows (manual)
+function saveETF() {
+  const val = document.getElementById('etf-input').value.trim();
+  if (!val) return;
+  const saved = { value: val, date: new Date().toLocaleDateString() };
+  localStorage.setItem('etfFlow', JSON.stringify(saved));
+  renderETF(saved);
+  document.getElementById('etf-input').value = '';
+}
+function renderETF(saved) {
+  const el = document.getElementById('etf-display');
+  if (!saved) {
+    el.textContent = 'Check farside.co.uk → enter today\'s total';
+    return;
+  }
+  const isPos = saved.value.startsWith('+') || (!saved.value.startsWith('-') && parseFloat(saved.value) > 0);
+  el.innerHTML = `<span style="color:${isPos?'#22c55e':'#ef4444'};font-weight:700;">${saved.value}</span> <span style="color:#64748b;">(${saved.date})</span>`;
+}
+function loadETF() {
+  const saved = localStorage.getItem('etfFlow');
+  renderETF(saved ? JSON.parse(saved) : null);
+}
+
+async function loadTierSnapshot() {
+  await Promise.allSettled([loadLiquidations(), loadUSDTD(), loadPutCall(), loadMacro()]);
+  loadETF();
+}
+
 async function loadWhaleLS() {
   try {
     const [ttRes, glRes] = await Promise.all([
@@ -615,7 +897,7 @@ async function updateQuickRead(funding, fg, oi) {
 async function loadAll() {
   const btn = document.getElementById('refreshBtn');
   btn.classList.add('spinning');
-  const [btc, fg, fund, oi] = await Promise.all([loadBTC(), loadFG(), loadFunding(), loadOI(), loadWhaleLS()]);
+  const [btc, fg, fund, oi] = await Promise.all([loadBTC(), loadFG(), loadFunding(), loadOI(), loadWhaleLS(), loadTierSnapshot()]);
   await updateQuickRead(fund, fg, oi);
   btn.classList.remove('spinning');
 }
