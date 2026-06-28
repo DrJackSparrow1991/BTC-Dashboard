@@ -360,15 +360,15 @@
 
       <!-- T1: Liquidations -->
       <div class="snap-card" style="--accent:#3b82f6;">
-        <div class="snap-tier" style="color:#3b82f6;">T1 · Liquidations 24h</div>
+        <div class="snap-tier" style="color:#3b82f6;">T1 · Open Interest</div>
         <div class="snap-row">
           <div class="snap-stat">
-            <div class="snap-val green" id="liq-long">—</div>
-            <div class="snap-lbl">Longs Liq'd</div>
+            <div class="snap-val white" id="liq-long">—</div>
+            <div class="snap-lbl">Current OI</div>
           </div>
           <div class="snap-stat">
-            <div class="snap-val red" id="liq-short">—</div>
-            <div class="snap-lbl">Shorts Liq'd</div>
+            <div class="snap-val" id="liq-short">—</div>
+            <div class="snap-lbl">24h Change</div>
           </div>
         </div>
         <div class="snap-signal" id="liq-signal">—</div>
@@ -595,10 +595,10 @@ function fmtB(n) {
 // ── LIVE DATA ──
 async function loadBTC() {
   try {
-    const r = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true');
+    const r = await fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT');
     const d = await r.json();
-    const price = d.bitcoin.usd;
-    const change = d.bitcoin.usd_24h_change;
+    const price = parseFloat(d.lastPrice);
+    const change = parseFloat(d.priceChangePercent);
     document.getElementById('btcPrice').innerHTML = `<span class="white">$${fmt(price)}</span>`;
     const cls = change >= 0 ? 'green' : 'red';
     const sign = change >= 0 ? '+' : '';
@@ -672,40 +672,52 @@ async function loadOI() {
 
 // ── TIER SNAPSHOT ──
 
-// T1 – 24h Liquidations (Binance forceOrders)
+// T1 – OI 24h Change (Binance OI History — public endpoint)
 async function loadLiquidations() {
   try {
-    const cutoff = Date.now() - 86400000;
-    const res = await fetch('https://fapi.binance.com/fapi/v1/forceOrders?symbol=BTCUSDT&autoCloseType=LIQUIDATION&limit=1000');
-    if (!res.ok) throw new Error('http');
-    const data = await res.json();
-    let longLiq = 0, shortLiq = 0;
-    data.forEach(o => {
-      if (o.time < cutoff) return;
-      const val = parseFloat(o.origQty) * parseFloat(o.averagePrice);
-      if (o.side === 'SELL') longLiq += val;   // long was liquidated → SELL order
-      else shortLiq += val;                     // short was liquidated → BUY order
-    });
-    const fmt = v => v >= 1e9 ? (v/1e9).toFixed(2)+'B' : v >= 1e6 ? (v/1e6).toFixed(1)+'M' : v >= 1e3 ? (v/1e3).toFixed(0)+'K' : '—';
-    document.getElementById('liq-long').textContent = '$'+fmt(longLiq);
-    document.getElementById('liq-short').textContent = '$'+fmt(shortLiq);
-    const bias = longLiq > shortLiq * 1.5 ? '⚡ Heavy long liquidations — bearish flush' :
-                 shortLiq > longLiq * 1.5 ? '⚡ Heavy short liquidations — squeeze rally' :
-                 '— Balanced liquidations';
+    // Get 2 OI data points: now and ~24h ago
+    const [nowRes, histRes] = await Promise.all([
+      fetch('https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT'),
+      fetch('https://fapi.binance.com/futures/data/openInterestHist?symbol=BTCUSDT&period=1h&limit=25')
+    ]);
+    const nowData = await nowRes.json();
+    const histData = await histRes.json();
+    const currentOI = parseFloat(nowData.openInterest);
+    const oldOI = histData.length > 0 ? parseFloat(histData[0].sumOpenInterest) : currentOI;
+    const oiChgPct = ((currentOI - oldOI) / oldOI * 100);
+    const sign = oiChgPct >= 0 ? '+' : '';
+    document.getElementById('liq-long').textContent = (currentOI/1000).toFixed(1)+'K';
+    document.getElementById('liq-short').className = 'snap-val ' + (oiChgPct >= 0 ? 'green' : 'red');
+    document.getElementById('liq-short').textContent = sign + oiChgPct.toFixed(2)+'%';
+    const bias = oiChgPct > 2 ? '📈 OI rising — new leverage entering market' :
+                 oiChgPct < -2 ? '📉 OI falling — positions closing / liquidations' :
+                 '— OI stable, no major positioning shift';
     document.getElementById('liq-signal').textContent = bias;
   } catch(e) {
-    ['liq-long','liq-short'].forEach(id => document.getElementById(id).textContent = 'err');
-    document.getElementById('liq-signal').textContent = 'API limit reached — try later';
+    ['liq-long','liq-short'].forEach(id => document.getElementById(id).textContent = '—');
+    document.getElementById('liq-signal').textContent = 'Binance OI error — refresh';
   }
 }
 
-// T2 – USDT Dominance (CoinGecko global)
-async function loadUSDTD() {
+// T2 + T6 combined — single CoinGecko session (avoids rate limit)
+// Call this once and it populates both T2 and T6
+let _cgGlobalCache = null;
+async function loadCoinGeckoAll() {
   try {
-    const res = await fetch('https://api.coingecko.com/api/v3/global');
-    const d = await res.json();
-    const dom = d.data.market_cap_percentage.usdt;
-    const chg = d.data.market_cap_change_percentage_24h_usd; // BTC market cap chg as proxy
+    // Two calls but staggered — global first, then price
+    const globalRes = await fetch('https://api.coingecko.com/api/v3/global');
+    const gd = await globalRes.json();
+    _cgGlobalCache = gd;
+
+    // Small pause to avoid rate limit
+    await new Promise(r => setTimeout(r, 800));
+
+    const priceRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true');
+    const pd = await priceRes.json();
+
+    // Populate T2
+    const dom = gd.data.market_cap_percentage.usdt;
+    const chg = gd.data.market_cap_change_percentage_24h_usd;
     document.getElementById('usdtd-val').textContent = dom.toFixed(2) + '%';
     const chgEl = document.getElementById('usdtd-chg');
     chgEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%';
@@ -714,10 +726,27 @@ async function loadUSDTD() {
       dom > 7 ? '⚠️ High USDT.D — risk-off, crypto bearish' :
       dom < 4 ? '✅ Low USDT.D — risk-on, bullish flow' :
       '— Neutral USDT dominance';
+
+    // Populate T6
+    const goldPrice = pd['pax-gold']?.usd;
+    const goldChg = pd['pax-gold']?.usd_24h_change;
+    document.getElementById('gold-val').textContent = goldPrice
+      ? '$' + goldPrice.toLocaleString('en-US', {maximumFractionDigits:0}) : '—';
+    document.getElementById('macro-signal').textContent =
+      goldChg == null ? '—' :
+      goldChg > 1 ? '⚠️ Gold surging — risk-off macro environment' :
+      goldChg < -1 ? '✅ Gold falling — risk-on sentiment' :
+      '— Gold stable, no macro stress signal';
   } catch(e) {
-    document.getElementById('usdtd-val').textContent = 'err';
-    document.getElementById('usdtd-signal').textContent = 'CoinGecko error';
+    document.getElementById('usdtd-val').textContent = '—';
+    document.getElementById('usdtd-signal').textContent = 'CoinGecko rate limit — refresh in 30s';
+    document.getElementById('gold-val').textContent = '—';
+    document.getElementById('macro-signal').textContent = 'CoinGecko rate limit — refresh in 30s';
   }
+}
+
+async function loadUSDTD() {
+  // No-op — handled by loadCoinGeckoAll()
 }
 
 // T4 – BTC Put/Call Ratio (Deribit public options)
@@ -750,40 +779,22 @@ async function loadPutCall() {
   }
 }
 
-// T6 – Macro: Gold (CoinGecko pax-gold) + S&P placeholder
+// T6 – Macro: Gold populated by loadCoinGeckoAll(). S&P via Yahoo.
 async function loadMacro() {
+  // Gold is handled by loadCoinGeckoAll — just load S&P here
+  let spText = 'N/A';
   try {
-    const goldRes = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=pax-gold&vs_currencies=usd&include_24hr_change=true');
-    const gd = await goldRes.json();
-    const goldPrice = gd['pax-gold']?.usd;
-    const goldChg = gd['pax-gold']?.usd_24h_change;
-    const goldEl = document.getElementById('gold-val');
-    goldEl.textContent = goldPrice ? '$' + goldPrice.toLocaleString('en-US', {maximumFractionDigits:0}) : '—';
-
-    // S&P 500 via Yahoo Finance CORS proxy
-    let spText = 'N/A';
-    try {
-      const spRes = await fetch('https://query2.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d&range=2d', {signal: AbortSignal.timeout(5000)});
-      if (spRes.ok) {
-        const sd = await spRes.json();
-        const closes = sd?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
-        if (closes && closes.length >= 1) {
-          const last = closes[closes.length - 1];
-          spText = last ? last.toLocaleString('en-US', {maximumFractionDigits:0}) : 'N/A';
-        }
+    const spRes = await fetch('https://query2.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d&range=2d', {signal: AbortSignal.timeout(5000)});
+    if (spRes.ok) {
+      const sd = await spRes.json();
+      const closes = sd?.chart?.result?.[0]?.indicators?.quote?.[0]?.close;
+      if (closes && closes.length >= 1) {
+        const last = closes.filter(Boolean).pop();
+        spText = last ? last.toLocaleString('en-US', {maximumFractionDigits:0}) : 'N/A';
       }
-    } catch(_) { spText = 'N/A'; }
-    document.getElementById('sp-val').textContent = spText;
-
-    const signal = goldChg != null ?
-      (goldChg > 1 ? '⚠️ Gold surging — risk-off macro environment' :
-       goldChg < -1 ? '✅ Gold falling — risk-on sentiment' :
-       '— Gold stable, no macro stress signal') : '—';
-    document.getElementById('macro-signal').textContent = signal;
-  } catch(e) {
-    document.getElementById('gold-val').textContent = 'err';
-    document.getElementById('macro-signal').textContent = 'CoinGecko error';
-  }
+    }
+  } catch(_) { spText = 'N/A'; }
+  document.getElementById('sp-val').textContent = spText;
 }
 
 // T7 – ETF Flows (manual)
@@ -810,7 +821,9 @@ function loadETF() {
 }
 
 async function loadTierSnapshot() {
-  await Promise.allSettled([loadLiquidations(), loadUSDTD(), loadPutCall(), loadMacro()]);
+  // Run Binance + Deribit calls in parallel, CoinGecko separately (rate limit protection)
+  await Promise.allSettled([loadLiquidations(), loadPutCall(), loadMacro()]);
+  await loadCoinGeckoAll(); // staggered internally
   loadETF();
 }
 
